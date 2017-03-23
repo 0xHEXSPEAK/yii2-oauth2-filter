@@ -24,7 +24,7 @@
   },
   "autoload": {
     "psr-0": {
-      "Hexspeak\\OauthFilter\\": "src/"
+      "Hexspeak\\OauthFilter\\": "yii2-oauth-filter/src"
     }
   }
 }
