@@ -1,5 +1,5 @@
 {
-  "name": "0xhexspeak/yii2-oauth2-filter",
+  "name": "hexspeak/oauth-filter",
   "description": "Yii2 module for filtering tokens given by oauth service.",
   "keywords": [
     "yii2",
