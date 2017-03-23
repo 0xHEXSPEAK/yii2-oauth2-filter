@@ -1,6 +1,6 @@
 <?php
 
-namespace hexspeak\OauthFilter;
+namespace Hexspeak\OauthFilter;
 
 use yii\base\Module
 
