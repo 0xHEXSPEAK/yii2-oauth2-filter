@@ -1,5 +1,5 @@
 {
-  "name": "hexspeak/oauth-filter",
+  "name": "0xhexspeak/yii2-oauth2-filter",
   "description": "Yii2 module for filtering tokens given by oauth service.",
   "keywords": [
     "yii2",
@@ -24,7 +24,7 @@
   },
   "autoload": {
     "psr-0": {
-      "Hexspeak\\OauthFilter\\": "oauth-filter/src"
+      "Oxhexspeak\\OauthFilter\\": "src/Filter"
     }
   }
 }
