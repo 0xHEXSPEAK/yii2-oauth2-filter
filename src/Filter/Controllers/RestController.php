@@ -10,11 +10,11 @@ use yii\filters\ContentNegotiator;
 use Oxhexspeak\OauthFilter\Oauth;
 
 /**
- * Class FilteredRestController.
+ * Class RestController.
  *
  * @package Oxhexspeak\OauthFilter
  */
-class FilteredRestController extends ActiveController
+class RestController extends ActiveController
 {
     /**
      * @inheritdoc
@@ -22,9 +22,12 @@ class FilteredRestController extends ActiveController
     public function behaviors()
     {
         return [
-            'filter' => [
+            // Add Oauth filter.
+            'Oauth' => [
                 'class' => Oauth::class,
+                'authUrl' => getenv('AUTH_URL')
             ],
+            // Add content negotiator.
             'contentNegotiator' => [
                 'class' => ContentNegotiator::className(),
                 'formats' => [
@@ -32,6 +35,7 @@ class FilteredRestController extends ActiveController
                     'application/xml' => Response::FORMAT_XML,
                 ],
             ],
+            // Add verb filter.
             'verbFilter' => [
                 'class' => VerbFilter::className(),
                 'actions' => $this->verbs(),
@@ -64,7 +68,8 @@ class FilteredRestController extends ActiveController
             $exception = ($excClass == 'yii\web\HttpException')
                 ? new $excClass($e->statusCode, $e->getMessage(), $e->statusCode)
                 : new $excClass($e->getMessage(), $e->statusCode)
-            ;
+                ;
+
             throw $exception;
         }
 
