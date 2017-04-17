@@ -83,7 +83,7 @@ trait AuthorizationServiceTrait
     {
         if (time() > (int) $timestamp) {
             throw new ForbiddenHttpException(
-                'You are unable to perform this action. Access token was expired.'
+                'Unable to perform the action. Access token was expired.'
             );
         }
 
