@@ -125,7 +125,6 @@ trait AuthorizationServiceTrait
      */
     protected function composeUrl($path = '')
     {
-        echo $this->authUrl . $path;
         return $this->authUrl . $path;
     }
 }
