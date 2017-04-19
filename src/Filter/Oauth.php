@@ -36,11 +36,7 @@ class Oauth extends ActionFilter
             $this->retrieveAccessToken(\Yii::$app->getRequest())
         );
 
-        // Check token expire period.
-        $this->checkTokenExpiration($accessToken['expires_in']);
-
-        // Check controller's scope allowance.
-        $this->checkControllerScopeAllowance($accessToken['scope']);
+        $this->validate($accessToken);
 
         return parent::beforeAction($action);
     }

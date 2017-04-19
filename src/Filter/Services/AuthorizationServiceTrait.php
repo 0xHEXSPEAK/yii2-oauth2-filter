@@ -42,7 +42,7 @@ trait AuthorizationServiceTrait
     {
         try {
             $response = $this->httpClient->post($this->composeUrl('/tokeninfo'), [
-                'body' => [
+                'form_params' => [
                     'access_token' => $token,
                 ]
             ]);
@@ -73,6 +73,20 @@ trait AuthorizationServiceTrait
     }
 
     /**
+     * Validates an access token.
+     *
+     * @param string $accessToken
+     * @return bool
+     */
+    public function validate($accessToken)
+    {
+        $this->checkTokenExpiration($accessToken['expires_in']);
+        $this->checkControllerScopeAllowance($accessToken['scope']);
+
+        return true;
+    }
+
+    /**
      * Checks whether an access token is expired.
      *
      * @param string $timestamp
@@ -83,7 +97,7 @@ trait AuthorizationServiceTrait
     {
         if (time() > (int) $timestamp) {
             throw new ForbiddenHttpException(
-                'Unable to perform the action. Access token was expired.'
+                'You are unable to perform this action. Access token was expired.'
             );
         }
 
@@ -99,22 +113,16 @@ trait AuthorizationServiceTrait
      */
     public function checkControllerScopeAllowance($scopes)
     {
-        $isAllowed     = false;
-
         $allowedScopes = explode(' ', $scopes);
         foreach ($allowedScopes as $scope) {
             if (\Yii::$app->controller->id === $scope) {
-                $isAllowed = true;
+                return true;
             }
         }
 
-        if ( ! $isAllowed) {
-            throw new ForbiddenHttpException(
-                'You are not allowed to perform this action. Check access token.'
-            );
-        }
-
-        return $isAllowed;
+        throw new ForbiddenHttpException(
+            'You are not allowed to perform this action. Check an access token.'
+        );
     }
 
     /**

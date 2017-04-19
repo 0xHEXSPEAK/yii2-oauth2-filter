@@ -23,7 +23,7 @@ class RestController extends ActiveController
     {
         return [
             // Add Oauth filter.
-            'Oauth' => [
+            'access' => [
                 'class' => Oauth::class,
                 'authUrl' => getenv('AUTH_URL')
             ],
