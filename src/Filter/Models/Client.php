@@ -8,17 +8,31 @@ use Oxhexspeak\OauthFilter\Services\Oauth2Service;
 
 class Client extends Model implements IdentityInterface
 {
-    public $expires_in;
-
     public $user_id;
 
-    public $owner_id;
+    public $client_id;
 
     public function rules()
     {
         return [
-            [['expires_in'], 'safe']
+            [
+                [
+                    'user_id',
+                    'client_id'
+                ],
+                'safe'
+            ]
         ];
+    }
+
+    public function getId()
+    {
+        return $this->user_id ? $this->user_id : $this->client_id;
+    }
+
+    public function isClient()
+    {
+        return (boolean) $this->client_id;
     }
 
     public static function findIdentityByAccessToken($token, $type = null)
@@ -34,11 +48,6 @@ class Client extends Model implements IdentityInterface
     }
 
     public static function findIdentity($id)
-    {
-        return false;
-    }
-
-    public function getId()
     {
         return false;
     }
