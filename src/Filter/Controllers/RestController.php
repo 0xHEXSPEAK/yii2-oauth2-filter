@@ -3,11 +3,14 @@
 namespace Oxhexspeak\OauthFilter\Controllers;
 
 use Yii;
+use yii\filters\auth\HttpBearerAuth;
+use yii\filters\Cors;
 use yii\web\Response;
 use yii\rest\ActiveController;
 use yii\filters\VerbFilter;
 use yii\filters\ContentNegotiator;
-use Oxhexspeak\OauthFilter\Oauth;
+use yii\web\User;
+use Oxhexspeak\OauthFilter\Models\Client;
 
 /**
  * Class RestController.
@@ -22,12 +25,29 @@ class RestController extends ActiveController
     public function behaviors()
     {
         return [
-            // Add Oauth filter.
             'access' => [
-                'class' => Oauth::class,
-                'authUrl' => getenv('AUTH_URL')
+                'class' => HttpBearerAuth::class,
+                'user' => Yii::createObject([
+                    'class' => User::class,
+                    'identityClass' => Client::class
+                ])
             ],
-            // Add content negotiator.
+            'corsFilter' => [
+                'class' => Cors::className(),
+                'cors'  => [
+                    'Origin' => ['*'],
+                    'Access-Control-Request-Method' => ['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS'],
+                    'Access-Control-Request-Headers' => ['*'],
+                    'Access-Control-Allow-Credentials' => null,
+                    'Access-Control-Max-Age' => 86400,
+                    'Access-Control-Expose-Headers' => [
+                        'X-Pagination-Current-Page',
+                        'X-Pagination-Page-Count',
+                        'X-Pagination-Per-Page',
+                        'X-Pagination-Total-Count'
+                    ],
+                ]
+            ],
             'contentNegotiator' => [
                 'class' => ContentNegotiator::className(),
                 'formats' => [
@@ -35,22 +55,11 @@ class RestController extends ActiveController
                     'application/xml' => Response::FORMAT_XML,
                 ],
             ],
-            // Add verb filter.
             'verbFilter' => [
                 'class' => VerbFilter::className(),
                 'actions' => $this->verbs(),
             ]
         ];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function init()
-    {
-        Yii::$app->response->headers->add('Access-Control-Allow-Origin', '*');
-        Yii::$app->response->headers->add('Access-Control-Allow-Headers', 'Accept, Authorization');
-        parent::init();
     }
 
     /**

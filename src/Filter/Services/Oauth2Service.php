@@ -2,7 +2,7 @@
 
 namespace Oxhexspeak\OauthFilter\Services;
 
-use yii\web\Request;
+use yii\base\Configurable;
 use yii\web\ForbiddenHttpException;
 use yii\web\ServerErrorHttpException;
 use yii\web\UnauthorizedHttpException;
@@ -10,26 +10,21 @@ use yii\helpers\Json;
 use GuzzleHttp\Client;
 
 /**
- * Class AuthorizationServiceTrait.
+ * Class Oauth2Service.
  *
  * @package Oxhexspeak\OauthFilter\Services
  */
-trait AuthorizationServiceTrait
+class Oauth2Service implements Configurable
 {
-
-    /**
-     * Defines auth server endpoint.
-     *
-     * @var string $authUrl
-     */
-    public $authUrl;
-
-    /**
-     * Defines http client.
-     *
-     * @var Client $httpClient
-     */
     protected $httpClient;
+
+    protected $authUrl;
+
+    public function __construct(Client $httpClient, array $config = [])
+    {
+        $this->httpClient = $httpClient;
+        $this->authUrl = $config['authUrl'];
+    }
 
     /**
      * Requests token info via service oauth.
@@ -41,35 +36,21 @@ trait AuthorizationServiceTrait
     public function requestTokenInfo($token)
     {
         try {
-            $response = $this->httpClient->post($this->composeUrl('/tokeninfo'), [
-                'form_params' => [
+            $response = $this->httpClient->get($this->composeUrl('/tokeninfo'), [
+                'query' => [
                     'access_token' => $token,
                 ]
             ]);
-        } catch (\HttpException $e) {
-            throw new ServerErrorHttpException("Service unavailable. {$e->getMessage()}");
+        } catch (\Exception $e) {
+            throw new ServerErrorHttpException("Auth service unavailable.");
         }
 
         $contents = $response->getBody()->getContents();
-
-        return Json::decode($contents);
-    }
-
-    /**
-     * Retrieves access token from authorization header.
-     *
-     * @param Request $request
-     * @return string
-     * @throws UnauthorizedHttpException
-     */
-    public function retrieveAccessToken(Request $request)
-    {
-        $accessToken = $request->getHeaders()->get('Authorization');
-        if ( ! $accessToken) {
-            throw new UnauthorizedHttpException('Missed authorization header.');
+        $tokenInfo = Json::decode($contents);
+        if ($this->validate($tokenInfo)) {
+            return $tokenInfo;
         }
-
-        return $accessToken;
+        throw new UnauthorizedHttpException("Token is not valid.");
     }
 
     /**
