@@ -6,6 +6,7 @@ use yii\base\Configurable;
 use yii\web\ForbiddenHttpException;
 use yii\web\ServerErrorHttpException;
 use yii\web\UnauthorizedHttpException;
+use yii\caching\Cache;
 use yii\helpers\Json;
 use GuzzleHttp\Client;
 
@@ -16,40 +17,57 @@ use GuzzleHttp\Client;
  */
 class Oauth2Service implements Configurable
 {
+    /**
+     * @var Client $httpClient
+     */
     protected $httpClient;
 
+    /**
+     * @var string $authUrl
+     */
     protected $authUrl;
 
     public function __construct(Client $httpClient, array $config = [])
     {
         $this->httpClient = $httpClient;
-        $this->authUrl = $config['authUrl'];
+        $this->authUrl    = $config['authUrl'];
     }
 
     /**
      * Requests token info via service oauth.
      *
      * @param string $token
+     * @param Cache $cache
      * @return array
      * @throws ServerErrorHttpException
+     * @throws UnauthorizedHttpException
      */
-    public function requestTokenInfo($token)
+    public function requestTokenInfo($token, Cache $cache)
     {
+        $cacheKey = "{$token}info";
+
+        if (($response = $cache->get($cacheKey))) {
+            return $response;
+        }
+
         try {
             $response = $this->httpClient->get($this->composeUrl('/tokeninfo'), [
-                'query' => [
-                    'access_token' => $token,
-                ]
+                'headers' => [
+                    'Authorization' => "Bearer $token"
+                ],
             ]);
         } catch (\Exception $e) {
             throw new ServerErrorHttpException("Auth service unavailable.");
         }
 
-        $contents = $response->getBody()->getContents();
+        $contents  = $response->getBody()->getContents();
         $tokenInfo = Json::decode($contents);
+
         if ($this->validate($tokenInfo)) {
+            $cache->set($cacheKey, $tokenInfo, $tokenInfo['expires_in'] - time());
             return $tokenInfo;
         }
+
         throw new UnauthorizedHttpException("Token is not valid.");
     }
 

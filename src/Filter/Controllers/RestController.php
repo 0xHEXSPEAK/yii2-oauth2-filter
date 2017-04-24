@@ -3,13 +3,13 @@
 namespace Oxhexspeak\OauthFilter\Controllers;
 
 use Yii;
-use yii\filters\auth\HttpBearerAuth;
-use yii\filters\Cors;
+use yii\web\User;
 use yii\web\Response;
 use yii\rest\ActiveController;
+use yii\filters\Cors;
 use yii\filters\VerbFilter;
 use yii\filters\ContentNegotiator;
-use yii\web\User;
+use yii\filters\auth\HttpBearerAuth;
 use Oxhexspeak\OauthFilter\Models\Client;
 
 /**
