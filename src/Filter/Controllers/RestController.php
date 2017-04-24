@@ -11,6 +11,7 @@ use yii\filters\VerbFilter;
 use yii\filters\ContentNegotiator;
 use yii\filters\auth\HttpBearerAuth;
 use Oxhexspeak\OauthFilter\Models\Client;
+use Oxhexspeak\OauthFilter\Behaviors\HttpBearerOauth;
 
 /**
  * Class RestController.
@@ -26,11 +27,17 @@ class RestController extends ActiveController
     {
         return [
             'access' => [
-                'class' => HttpBearerAuth::class,
+                'class' => HttpBearerOauth::class,
                 'user' => Yii::createObject([
                     'class' => User::class,
                     'identityClass' => Client::class
-                ])
+                ]),
+                'allow' => [
+                    'any' => [],
+                    'client' => [],
+                    'customer' => [],
+                    'application' => [],
+                ],
             ],
             'corsFilter' => [
                 'class' => Cors::className(),
