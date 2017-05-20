@@ -3,6 +3,8 @@
 namespace Oxhexspeak\OauthFilter\Controllers;
 
 use Yii;
+use yii\web\ForbiddenHttpException;
+use yii\web\IdentityInterface;
 use yii\web\User;
 use yii\web\Response;
 use yii\rest\ActiveController;
@@ -89,5 +91,30 @@ class RestController extends ActiveController
         }
 
         return $result;
+    }
+
+    /**
+     * Shortcut to access user identity from the controller instance.
+     *
+     * @return null|IdentityInterface|Client
+     */
+    protected function getUserIdentity()
+    {
+        return Yii::$app->getUser()->getIdentity();
+    }
+
+    /**
+     * Checks validity of access for requested resource id.
+     *
+     * @param int|string $id
+     * @return boolean
+     * @throws ForbiddenHttpException
+     */
+    protected function isResourceOwner($resourceId)
+    {
+        if ($this->getUserIdentity()->isClient() || $this->getUserIdentity()->getId() === $resourceId) {
+            return true;
+        }
+        throw new ForbiddenHttpException('You have no rights to access requested resource');
     }
 }
