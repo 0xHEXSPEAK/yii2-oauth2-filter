@@ -13,7 +13,7 @@ use yii\web\UnauthorizedHttpException;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-abstract class HttpBearerOauth extends HttpBearerAuth
+class HttpBearerOauth extends HttpBearerAuth
 {
     /**
      * List allowed

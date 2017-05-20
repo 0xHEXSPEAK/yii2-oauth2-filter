@@ -3,6 +3,7 @@
 namespace Oxhexspeak\OauthFilter\Services;
 
 use yii\base\Configurable;
+use yii\helpers\Inflector;
 use yii\web\ForbiddenHttpException;
 use yii\web\ServerErrorHttpException;
 use yii\web\UnauthorizedHttpException;
@@ -114,7 +115,7 @@ class Oauth2Service implements Configurable
     {
         $allowedScopes = explode(' ', $scopes);
         foreach ($allowedScopes as $scope) {
-            if (\Yii::$app->controller->id === $scope) {
+            if (Inflector::pluralize(\Yii::$app->controller->id) === $scope) {
                 return true;
             }
         }

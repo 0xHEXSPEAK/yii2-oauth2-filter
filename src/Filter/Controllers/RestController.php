@@ -9,7 +9,6 @@ use yii\rest\ActiveController;
 use yii\filters\Cors;
 use yii\filters\VerbFilter;
 use yii\filters\ContentNegotiator;
-use yii\filters\auth\HttpBearerAuth;
 use Oxhexspeak\OauthFilter\Models\Client;
 use Oxhexspeak\OauthFilter\Behaviors\HttpBearerOauth;
 
