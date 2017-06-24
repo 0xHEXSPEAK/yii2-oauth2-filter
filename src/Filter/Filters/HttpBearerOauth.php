@@ -1,6 +1,6 @@
 <?php
 
-namespace Oxhexspeak\OauthFilter\Behaviors;
+namespace Oxhexspeak\OauthFilter\Filters;
 
 use Oxhexspeak\OauthFilter\Models\Client;
 use Yii;

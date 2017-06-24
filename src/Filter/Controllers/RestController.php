@@ -5,14 +5,13 @@ namespace Oxhexspeak\OauthFilter\Controllers;
 use Yii;
 use yii\web\ForbiddenHttpException;
 use yii\web\IdentityInterface;
-use yii\web\User;
 use yii\web\Response;
 use yii\rest\ActiveController;
 use yii\filters\Cors;
 use yii\filters\VerbFilter;
 use yii\filters\ContentNegotiator;
 use Oxhexspeak\OauthFilter\Models\Client;
-use Oxhexspeak\OauthFilter\Behaviors\HttpBearerOauth;
+use Oxhexspeak\OauthFilter\Filters\HttpBearerOauth;
 
 /**
  * Class RestController.
@@ -27,12 +26,8 @@ class RestController extends ActiveController
     public function behaviors()
     {
         return [
-            'access' => [
+            'authenticator' => [
                 'class' => HttpBearerOauth::class,
-                'user' => Yii::createObject([
-                    'class' => User::class,
-                    'identityClass' => Client::class
-                ]),
                 'allow' => [
                     'any' => [],
                     'client' => [],
