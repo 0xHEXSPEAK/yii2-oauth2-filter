@@ -107,7 +107,7 @@ class RestController extends ActiveController
      */
     protected function isResourceOwner($resourceId)
     {
-        if ($this->getUserIdentity()->isClient() || $this->getUserIdentity()->getId() === $resourceId) {
+        if ($this->getUserIdentity()->isClient() || $this->getUserIdentity()->getId() == $resourceId) {
             return true;
         }
         throw new ForbiddenHttpException('You have no rights to access requested resource');
